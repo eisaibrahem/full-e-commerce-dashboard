@@ -1,13 +1,18 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { NextRequest } from 'next/server';
 
-const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)',"/api/:path*"])
+// إنشاء matcher للمسارات العامة
+const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)', '/api/:path*']);
 
-export default clerkMiddleware((auth, request) => {
-  
-  if (!isPublicRoute(request)) {
-    auth().protect()
+export default clerkMiddleware((auth, req: NextRequest) => {
+  // التحقق مما إذا كان المسار هو مسار عام باستخدام NextRequest
+  if (isPublicRoute(req)) {
+    return; // لا حاجة لتطبيق حماية المصادقة على المسارات العامة
   }
-})
+
+  // إذا كان المسار غير عام، يتم فرض المصادقة
+  auth().protect();
+});
 
 export const config = {
   matcher: [
@@ -16,4 +21,4 @@ export const config = {
     // Always run for API routes
     '/(api|trpc)(.*)',
   ],
-}
+};

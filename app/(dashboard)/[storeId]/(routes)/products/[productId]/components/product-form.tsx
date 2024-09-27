@@ -158,25 +158,33 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           <FormField
             control={form.control}
             name="images"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Images</FormLabel>
-                <FormControl>
-                  <ImageUpload
-                    value={field.value.map((image) => image.url)}
-                    disabled={loading}
-                    onChange={(url) =>
-                      field.onChange([...field.value, { url }])
-                    }
-                    onRemove={(url) =>
-                      field.onChange([
-                        ...field.value.filter((current) => current.url !== url),
-                      ])
-                    }
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+            render={({}) => (
+              <FormField
+                control={form.control}
+                name="images"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Images</FormLabel>
+                    <FormControl>
+                      <ImageUpload
+                        value={field.value.map((image) => image.url)} // يتم عرض قائمة الصور الحالية
+                        disabled={loading}
+                        onChange={(url) => {
+                          const updatedImages = [...field.value, { url }]; // إضافة الصورة الجديدة إلى القائمة
+                          field.onChange(updatedImages); // تحديث قائمة الصور
+                        }}
+                        onRemove={(url) => {
+                          const updatedImages = field.value.filter(
+                            (current) => current.url !== url
+                          );
+                          field.onChange(updatedImages); // تحديث قائمة الصور بعد الإزالة
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             )}
           />
           <div className="grid grid-cols-3 gap-8">
