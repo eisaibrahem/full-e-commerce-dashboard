@@ -78,21 +78,13 @@ export async function DELETE(
 }
 
 // جلب المتاجر باستخدام GET
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
-export default async function handler(req: Request, res) {
-  if (req.method === 'GET') {
-    try {
-      // جلب جميع المتاجر من قاعدة البيانات
-      const stores = await prisma.store.findMany();
-      res.status(200).json(stores);
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch stores' });
-    }
-  } else {
-    res.setHeader('Allow', ['GET']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+export async function GET() {
+  try {
+    // جلب جميع المتاجر من قاعدة البيانات
+    const stores = await prismadb.store.findMany();
+    return NextResponse.json(stores);
+  } catch (error) {
+    console.log("[STORE_GET]", error);
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }
