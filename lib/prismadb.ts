@@ -1,10 +1,21 @@
 import { PrismaClient } from "@prisma/client";
 
-declare global {
+// إنشاء مثيل جديد لـ PrismaClient أو إعادة استخدام المثيل الحالي في بيئة التطوير
+const prismaClientSingleton = (() => {
   let prisma: PrismaClient | undefined;
-}
 
-const prismadb = globalThis.prisma || new PrismaClient();
-if (process.env.NODE_ENV !== "production") globalThis.prisma = prismadb;
+  // إذا كنا في بيئة التطوير، نستخدم المثيل المخزن في `global`
+  if (process.env.NODE_ENV !== "production") {
+    if (!globalThis.hasOwnProperty('__prisma')) {
+      globalThis.__prisma = new PrismaClient();
+    }
+    prisma = globalThis.__prisma;
+  } else {
+    // في بيئة الإنتاج، ننشئ مثيل جديد في كل مرة
+    prisma = new PrismaClient();
+  }
 
-export default prismadb;
+  return prisma;
+})();
+
+export default prismaClientSingleton;
