@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Check,
   ChevronsUpDown,
@@ -28,17 +27,20 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 
-type PopoverTriggerProps = React.ComponentPropsWithoutRef<
-  typeof PopoverTrigger
->;
+// تعريف واجهة للمتجر
+interface Store {
+  id: string;
+  name: string;
+}
 
-interface StoreSwitcherProps extends PopoverTriggerProps {
-  items: Storage[];
+interface StoreSwitcherProps {
+  className?: string;
+  items: Store[]; // تغيير نوع items إلى Store[]
 }
 
 export default function StoreSwitcher({
   className,
-  items = [],
+  items,
 }: StoreSwitcherProps) {
   const storeModal = useStoreModal();
   const params = useParams();
