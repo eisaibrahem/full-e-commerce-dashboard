@@ -11,8 +11,8 @@ export default clerkMiddleware((auth, req: NextRequest) => {
     return;
   }
 
-  console.log("Protected route, enforcing authentication:", req.nextUrl.pathname);
-  auth().protect();
+  // مؤقتًا قم بإلغاء enforce المصادقة لاختبار الوصول بدون Clerk
+  // auth().protect();
 });
 
 export const config = {
