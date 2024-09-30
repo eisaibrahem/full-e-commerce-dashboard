@@ -1,25 +1,23 @@
-"use client"
+"use client";
 
-import { Plus } from "lucide-react"
-import { useParams, useRouter } from "next/navigation"
+import { Plus } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button"
-import { Heading } from "@/components/ui/heading"
-import { Separator } from "@/components/ui/separator"
-import { DataTable } from "@/components/ui/data-table"
-import { ApiList } from "@/components/ui/api-list"
+import { Button } from "@/components/ui/button";
+import { Heading } from "@/components/ui/heading";
+import { Separator } from "@/components/ui/separator";
+import { DataTable } from "@/components/ui/data-table";
+import { ApiList } from "@/components/ui/api-list";
 
-import { ProductColumn, columns } from "./columns"
+import { ProductColumn, columns } from "./columns";
 
 interface ProductClientProps {
-  data: ProductColumn[]
+  data: ProductColumn[];
 }
 
-export const ProductClient: React.FC<ProductClientProps> = ({
-  data
-}) => {
-  const router = useRouter()
-  const params = useParams()
+export const ProductClient: React.FC<ProductClientProps> = ({ data }) => {
+  const router = useRouter();
+  const params = useParams();
 
   return (
     <>
@@ -39,5 +37,5 @@ export const ProductClient: React.FC<ProductClientProps> = ({
       <Separator />
       <ApiList entityName="products" entityIdName="productId" />
     </>
-  )
-}
+  );
+};

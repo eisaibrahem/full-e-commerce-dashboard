@@ -5,7 +5,7 @@ import axios from "axios";
 import { Trash } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { toast } from "react-hot-toast";
 
 import {
@@ -47,10 +47,10 @@ const formSchema = z.object({
 type ProductFormValues = z.infer<typeof formSchema>;
 
 interface ProductFormProps {
-  initialData;
-  categories;
-  colors;
-  sizes;
+  initialData?: ProductFormValues;
+  categories: { id: string; name: string }[];
+  colors: { id: string; name: string }[];
+  sizes: { id: string; name: string }[];
 }
 
 export const ProductForm: React.FC<ProductFormProps> = ({
@@ -75,7 +75,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     defaultValues: initialData
       ? {
           ...initialData,
-          price: parseFloat(String(initialData?.price)),
+          price: parseFloat(String(initialData.price)),
         }
       : {
           name: "",
@@ -126,6 +126,24 @@ export const ProductForm: React.FC<ProductFormProps> = ({
     }
   };
 
+  const handleImageChange = useCallback(
+    (url: string) => {
+      const updatedImages = [...form.getValues("images"), { url }];
+      form.setValue("images", updatedImages);
+    },
+    [form]
+  );
+
+  const handleImageRemove = useCallback(
+    (url: string) => {
+      const updatedImages = form
+        .getValues("images")
+        .filter((image) => image.url !== url);
+      form.setValue("images", updatedImages);
+    },
+    [form]
+  );
+
   return (
     <>
       <AlertModal
@@ -141,9 +159,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             disabled={loading}
             variant="destructive"
             size="icon"
-            onClick={() => {
-              setOpen(true);
-            }}
+            onClick={() => setOpen(true)}
           >
             <Trash className="h-4 w-4" />
           </Button>
@@ -158,33 +174,19 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           <FormField
             control={form.control}
             name="images"
-            render={({}) => (
-              <FormField
-                control={form.control}
-                name="images"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Images</FormLabel>
-                    <FormControl>
-                      <ImageUpload
-                        value={field.value.map((image) => image.url)} // يتم عرض قائمة الصور الحالية
-                        disabled={loading}
-                        onChange={(url) => {
-                          const updatedImages = [...field.value, { url }]; // إضافة الصورة الجديدة إلى القائمة
-                          field.onChange(updatedImages); // تحديث قائمة الصور
-                        }}
-                        onRemove={(url) => {
-                          const updatedImages = field.value.filter(
-                            (current) => current.url !== url
-                          );
-                          field.onChange(updatedImages); // تحديث قائمة الصور بعد الإزالة
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            render={() => (
+              <FormItem>
+                <FormLabel>Images</FormLabel>
+                <FormControl>
+                  <ImageUpload
+                    value={form.watch("images").map((image) => image.url)} // عرض الصور المحملة
+                    disabled={loading}
+                    onChange={handleImageChange}
+                    onRemove={handleImageRemove}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
           />
           <div className="grid grid-cols-3 gap-8">
@@ -233,14 +235,10 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                     disabled={loading}
                     onValueChange={field.onChange}
                     value={field.value}
-                    defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a category"
-                        />
+                        <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -265,14 +263,10 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                     disabled={loading}
                     onValueChange={field.onChange}
                     value={field.value}
-                    defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a size"
-                        />
+                        <SelectValue placeholder="Select a size" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -297,14 +291,10 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                     disabled={loading}
                     onValueChange={field.onChange}
                     value={field.value}
-                    defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue
-                          defaultValue={field.value}
-                          placeholder="Select a color"
-                        />
+                        <SelectValue placeholder="Select a color" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
