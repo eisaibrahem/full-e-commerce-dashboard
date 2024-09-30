@@ -12,6 +12,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata = {
   title: "Dashboard",
   description: "E-Commerce Dashboard",
+  icons: {
+    icon: "/eistore_logo.png",
+  },
 };
 
 export default async function RootLayout({
