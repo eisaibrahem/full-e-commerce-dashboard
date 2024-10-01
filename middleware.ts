@@ -12,7 +12,7 @@ export default clerkMiddleware((auth, req: NextRequest) => {
   }
 
   // مؤقتًا قم بإلغاء enforce المصادقة لاختبار الوصول بدون Clerk
-  // auth().protect();
+   auth().protect();
 });
 
 export const config = {
