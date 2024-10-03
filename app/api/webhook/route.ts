@@ -1,8 +1,13 @@
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
+import { stripe } from "@/lib/stripe"; // تأكد من أن ملف stripe.ts موجود ومعد بشكل صحيح
+import prismadb from "@/lib/prismadb"; // تأكد من إعداد Prisma بشكل صحيح
 
-import { stripe } from "@/lib/stripe";
-import prismadb from "@/lib/prismadb";
+export const config = {
+  api: {
+    bodyParser: false, // تعطيل معالج الجسم
+  },
+};
 
 export async function POST(req: Request) {
   const body = await req.text();
