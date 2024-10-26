@@ -1,141 +1,150 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// This is your Prisma schema file, which defines the structure of your database models.
+// You can learn more about Prisma schemas in the official docs.
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client-js" // This tells Prisma to generate a JavaScript/TypeScript client.
 }
 
 datasource db {
-  provider     = "postgresql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider     = "postgresql" // This defines PostgreSQL as the database provider.
+  url          = env("DATABASE_URL") // The database URL is stored in the environment variable DATABASE_URL.
+  relationMode = "prisma" // This tells Prisma how to handle database relationships.
 }
 
+// The Store model represents a store in your database.
 model Store {
-  id         String      @id @default(uuid())
-  name       String
-  userId     String
-  billboards Billboard[] @relation("StoreToBillboard")
-  categories Category[]  @relation("StoreToCategory")
-  sizes      Size[]      @relation("StoreToSize")
-  colors     Color[]     @relation("StoreToColor")
-  products   Product[]   @relation("StoreToProduct")
-  orders     Order[]     @relation("StoreToOrder")
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id         String      @id @default(uuid()) // The store's unique ID, which is generated automatically.
+  name       String // The store's name.
+  userId     String // The ID of the user who owns the store.
+  billboards Billboard[] @relation("StoreToBillboard") // A store can have many billboards.
+  categories Category[]  @relation("StoreToCategory") // A store can have many categories.
+  sizes      Size[]      @relation("StoreToSize") // A store can have many sizes for products.
+  colors     Color[]     @relation("StoreToColor") // A store can have many colors for products.
+  products   Product[]   @relation("StoreToProduct") // A store can have many products.
+  orders     Order[]     @relation("StoreToOrder") // A store can have many orders.
+  createdAt  DateTime    @default(now()) // The time the store was created.
+  updatedAt  DateTime    @updatedAt // The time the store was last updated.
 }
 
+// The Billboard model represents a billboard (an advertisement) in the store.
 model Billboard {
-  id         String     @id @default(uuid())
-  storeId    String
-  store      Store      @relation("StoreToBillboard", fields: [storeId], references: [id])
-  label      String
-  imageUrl   String
-  categories Category[]
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  id         String     @id @default(uuid()) // The billboard's unique ID.
+  storeId    String // The ID of the store the billboard belongs to.
+  store      Store      @relation("StoreToBillboard", fields: [storeId], references: [id]) // Relationship to the store.
+  label      String // The text label of the billboard.
+  imageUrl   String // The image URL for the billboard.
+  categories Category[] // A billboard can belong to many categories.
+  createdAt  DateTime   @default(now()) // The time the billboard was created.
+  updatedAt  DateTime   @updatedAt // The time the billboard was last updated.
 
-  @@index([storeId])
+  @@index([storeId]) // Creates an index on storeId for faster queries.
 }
 
+// The Category model represents product categories in the store.
 model Category {
-  id          String    @id @default(uuid())
-  storeId     String
-  store       Store     @relation("StoreToCategory", fields: [storeId], references: [id])
-  billboardId String
-  billboard   Billboard @relation(fields: [billboardId], references: [id])
-  products    Product[] @relation("CategoryToProduct")
-  name        String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id          String    @id @default(uuid()) // The category's unique ID.
+  storeId     String // The ID of the store the category belongs to.
+  store       Store     @relation("StoreToCategory", fields: [storeId], references: [id]) // Relationship to the store.
+  billboardId String // The ID of the billboard this category belongs to.
+  billboard   Billboard @relation(fields: [billboardId], references: [id]) // Relationship to the billboard.
+  products    Product[] @relation("CategoryToProduct") // A category can have many products.
+  name        String // The name of the category.
+  createdAt   DateTime  @default(now()) // The time the category was created.
+  updatedAt   DateTime  @updatedAt // The time the category was last updated.
 
-  @@index([storeId])
-  @@index([billboardId])
+  @@index([storeId]) // Index for faster queries on storeId.
+  @@index([billboardId]) // Index for faster queries on billboardId.
 }
 
+// The Size model represents product sizes.
 model Size {
-  id        String    @id @default(uuid())
-  storeId   String
-  store     Store     @relation("StoreToSize", fields: [storeId], references: [id])
-  name      String
-  value     String
-  products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id        String    @id @default(uuid()) // The size's unique ID.
+  storeId   String // The ID of the store the size belongs to.
+  store     Store     @relation("StoreToSize", fields: [storeId], references: [id]) // Relationship to the store.
+  name      String // The name of the size.
+  value     String // The value of the size (e.g., "Large", "Small").
+  products  Product[] // A size can apply to many products.
+  createdAt DateTime  @default(now()) // The time the size was created.
+  updatedAt DateTime  @updatedAt // The time the size was last updated.
 
-  @@index([storeId])
+  @@index([storeId]) // Index on storeId.
 }
 
+// The Color model represents product colors.
 model Color {
-  id        String    @id @default(uuid())
-  storeId   String
-  store     Store     @relation("StoreToColor", fields: [storeId], references: [id])
-  name      String
-  value     String
-  products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id        String    @id @default(uuid()) // The color's unique ID.
+  storeId   String // The ID of the store the color belongs to.
+  store     Store     @relation("StoreToColor", fields: [storeId], references: [id]) // Relationship to the store.
+  name      String // The name of the color (e.g., "Red", "Blue").
+  value     String // The actual color value (e.g., a hex code or name).
+  products  Product[] // A color can apply to many products.
+  createdAt DateTime  @default(now()) // The time the color was created.
+  updatedAt DateTime  @updatedAt // The time the color was last updated.
 
-  @@index([storeId])
+  @@index([storeId]) // Index on storeId.
 }
 
+// The Product model represents items for sale in the store.
 model Product {
-  id         String      @id @default(uuid())
-  storeId    String
-  store      Store       @relation("StoreToProduct", fields: [storeId], references: [id])
-  categoryId String
-  category   Category    @relation("CategoryToProduct", fields: [categoryId], references: [id])
-  name       String
-  price      Decimal
-  isFeatured Boolean     @default(false)
-  isArchived Boolean     @default(false)
-  sizeId     String
-  size       Size        @relation(fields: [sizeId], references: [id])
-  colorId    String
-  color      Color       @relation(fields: [colorId], references: [id])
-  images     Image[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  orderItems OrderItem[]
+  id         String      @id @default(uuid()) // The product's unique ID.
+  storeId    String // The ID of the store the product belongs to.
+  store      Store       @relation("StoreToProduct", fields: [storeId], references: [id]) // Relationship to the store.
+  categoryId String // The ID of the category the product belongs to.
+  category   Category    @relation("CategoryToProduct", fields: [categoryId], references: [id]) // Relationship to the category.
+  name       String // The name of the product.
+  price      Decimal // The price of the product.
+  isFeatured Boolean     @default(false) // Whether the product is featured.
+  isArchived Boolean     @default(false) // Whether the product is archived.
+  sizeId     String // The ID of the size of the product.
+  size       Size        @relation(fields: [sizeId], references: [id]) // Relationship to the size.
+  colorId    String // The ID of the color of the product.
+  color      Color       @relation(fields: [colorId], references: [id]) // Relationship to the color.
+  images     Image[] // The product can have multiple images.
+  createdAt  DateTime    @default(now()) // The time the product was created.
+  updatedAt  DateTime    @updatedAt // The time the product was last updated.
+  orderItems OrderItem[] // The product can be part of multiple order items.
 
-  @@index([storeId])
-  @@index([categoryId])
-  @@index([sizeId])
-  @@index([colorId])
+  @@index([storeId]) // Index on storeId.
+  @@index([categoryId]) // Index on categoryId.
+  @@index([sizeId]) // Index on sizeId.
+  @@index([colorId]) // Index on colorId.
 }
 
+// The Image model represents product images.
 model Image {
-  id        String   @id @default(uuid())
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  url       String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String   @id @default(uuid()) // The image's unique ID.
+  productId String // The ID of the product the image belongs to.
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade) // Relationship to the product. If the product is deleted, the image will also be deleted.
+  url       String // The URL of the image.
+  createdAt DateTime @default(now()) // The time the image was created.
+  updatedAt DateTime @updatedAt // The time the image was last updated.
 
-  @@index([productId])
+  @@index([productId]) // Index on productId.
 }
 
+// The Order model represents customer orders.
 model Order {
-  id         String      @id @default(uuid())
-  storeId    String
-  store      Store       @relation("StoreToOrder", fields: [storeId], references: [id])
-  orderItems OrderItem[]
-  isPaid     Boolean     @default(false)
-  phone      String      @default("")
-  address    String      @default("")
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id         String      @id @default(uuid()) // The order's unique ID.
+  storeId    String // The ID of the store the order belongs to.
+  store      Store       @relation("StoreToOrder", fields: [storeId], references: [id]) // Relationship to the store.
+  orderItems OrderItem[] // An order can have multiple order items.
+  isPaid     Boolean     @default(false) // Whether the order has been paid for.
+  phone      String      @default("") // The customer's phone number.
+  address    String      @default("") // The customer's address.
+  createdAt  DateTime    @default(now()) // The time the order was created.
+  updatedAt  DateTime    @updatedAt // The time the order was last updated.
 
-  @@index([storeId])
+  @@index([storeId]) // Index on storeId.
 }
 
+// The OrderItem model represents individual items in an order.
 model OrderItem {
-  id        String  @id @default(uuid())
-  orderId   String
-  order     Order   @relation(fields: [orderId], references: [id])
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
+  id        String  @id @default(uuid()) // The order item's unique ID.
+  orderId   String // The ID of the order this item belongs to.
+  order     Order   @relation(fields: [orderId], references: [id]) // Relationship to the order.
+  productId String // The ID of the product in the order.
+  product   Product @relation(fields: [productId], references: [id]) // Relationship to the product.
 
-  @@index([orderId])
-  @@index([productId])
+  @@index([orderId]) // Index on orderId.
+  @@index([productId]) // Index on productId.
 }

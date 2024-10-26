@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import prismadb from "@/lib/prismadb";
+import React from "react";
 
 export default async function SetupLayout({
   children,
